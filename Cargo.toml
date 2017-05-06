@@ -1,0 +1,14 @@
+[package]
+name = "genetic_algorithms"
+version = "0.1.0"
+authors = ["Diego Carrillo <dailexgo@gmail.com>"]
+
+[lib]
+name = "genetic_algorithms"
+path =  "src/lib.rs"
+
+[[bin]]
+name = "annealing_redux_bin"
+path = "src/main.rs"
+
+[dependencies]
