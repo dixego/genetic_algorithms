@@ -1,10 +1,8 @@
-pub newtype PString = Vec<u32>;
 
 #[derive(Debug)]
-pub struct PString(Vec<u32>);
+pub struct PString(pub Vec<u32>);
 
-impl Pstring {
-    pub 
+impl PString {
 }
 
 #[derive(Debug)]
@@ -14,14 +12,14 @@ pub struct Solution<'a> {
     pub str_set: &'a Vec<PString> 
 }
 
-impl Solution {
+impl<'a> Solution<'a> {
 
     pub fn new(pstr: PString, set: &Vec<PString>) -> Solution {
         let mut s = Solution {
             pstr: pstr,
             cost: 0.0,
             str_set: set
-        }
+        };
         s.cost = s.cost();
         s
     }
@@ -31,5 +29,6 @@ impl Solution {
         for i in self.str_set {
             
         }
+        0.0
     }
 }

@@ -4,6 +4,6 @@ use genetic_algorithms::solution::PString;
 
 fn main() {
     println!("Hello, world!");
-    let a: PString = vec![1,2,3];
-    println!("{:#?}", a);
+    let a: PString = PString(vec![1,2,3]);
+    println!("{:?}", a);
 }
