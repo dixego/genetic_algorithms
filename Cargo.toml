@@ -8,7 +8,7 @@ name = "genetic_algorithms"
 path =  "src/lib.rs"
 
 [[bin]]
-name = "annealing_redux_bin"
+name = "genetic_algorithms_bin"
 path = "src/main.rs"
 
 [dependencies]
