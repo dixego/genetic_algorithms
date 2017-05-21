@@ -12,3 +12,4 @@ name = "genetic_algorithms_bin"
 path = "src/main.rs"
 
 [dependencies]
+rand = "0.3.15"
