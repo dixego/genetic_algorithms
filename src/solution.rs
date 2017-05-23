@@ -1,8 +1,9 @@
 extern crate rand;
 
+use std::fmt;
 use self::rand::{Rng};
 
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 pub struct PString(pub Vec<char>);
 
 pub type PStringError = String;
@@ -41,10 +42,17 @@ impl PString {
     }
 }
 
-#[derive(Debug)]
+impl fmt::Debug for PString {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let string: String = self.0.iter().cloned().collect();
+        write!(f, "{}", string)
+    }
+}
+
+#[derive(Clone)]
 pub struct Solution<'a>{
     pub pstr: PString,
-    pub cost: f64,
+    pub fitness: f64,
     pub str_set: &'a Vec<PString>,
 }
 
@@ -53,14 +61,14 @@ impl<'a> Solution<'a> {
     pub fn new(pstr: PString, set: &Vec<PString>) -> Solution {
         let mut s = Solution {
             pstr: pstr,
-            cost: 0.0,
+            fitness: 0.0,
             str_set: set
         };
-        s.cost = s.cost();
+        s.fitness = s.fitness();
         s
     }
 
-    pub fn cost(&self) -> f64 {
+    pub fn fitness(&self) -> f64 {
         let mut max = 0;
         for s in self.str_set {
             let dist = self.pstr.distance(&s).unwrap();
@@ -68,15 +76,15 @@ impl<'a> Solution<'a> {
                 max = dist
             }
         }
-        1.0 - (max as f64)/(self.pstr.len() as f64)
+        2.0 - (max as f64)/(self.pstr.len() as f64)
     }
 
-    pub fn recombine_random<T: Rng>(&self, other: Solution, rng: &mut T) -> Solution {
+    pub fn recombine_random<T: Rng>(&self, other: &Solution, rng: &mut T) -> Solution {
         let j = rng.gen_range(1, self.pstr.len() - 1); 
         self.recombine_fixed(other, j)
     }
 
-    pub fn recombine_fixed(&self, other: Solution, j: usize) -> Solution {
+    pub fn recombine_fixed(&self, other: &Solution, j: usize) -> Solution {
         let len = self.pstr.len();
         let mut v = Vec::with_capacity(len);
         let vec1 = self.pstr.vec();
@@ -95,4 +103,10 @@ impl<'a> Solution<'a> {
     }
 
     pub fn mutate<T: Rng>(&self, rng: T, probability: f64) {}
+}
+
+impl<'a> fmt::Debug for Solution<'a> {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "Solution {{ pstr: {:?},  fitness: {:?} }}", self.pstr, self.fitness)
+    }
 }
