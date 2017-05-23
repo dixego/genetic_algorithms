@@ -36,7 +36,7 @@ impl<'a> Population<'a> {
     fn generate_random_solution<T: Rng>(len: usize, set: &'a Vec<PString>, rng: &mut T) -> Solution<'a> {
         let mut vec = Vec::with_capacity(len);
         for _ in 0..len {
-            vec.push(rng.gen_range(b'A', b'E') as char);
+            vec.push(rng.gen_range(0, 4));
         }
         Solution::new(PString(vec), set)
     }

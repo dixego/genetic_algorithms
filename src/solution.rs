@@ -4,18 +4,18 @@ use std::fmt;
 use self::rand::{Rng};
 
 #[derive(Clone)]
-pub struct PString(pub Vec<char>);
+pub struct PString(pub Vec<u32>);
 
 pub type PStringError = String;
 pub type PSResult<T> = Result<T, PStringError>;
 
 impl PString {
 
-    pub fn new(string: String) -> PString {
-        PString(string.chars().collect())
+    pub fn new(vec: Vec<u32>) -> PString {
+        PString(vec)
     }
 
-    pub fn vec(&self) -> &Vec<char> {
+    pub fn vec(&self) -> &Vec<u32> {
         &self.0
     }
 
@@ -44,8 +44,7 @@ impl PString {
 
 impl fmt::Debug for PString {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let string: String = self.0.iter().cloned().collect();
-        write!(f, "{}", string)
+        write!(f, "{:?}", self.0)
     }
 }
 
