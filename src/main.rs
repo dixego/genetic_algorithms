@@ -2,31 +2,42 @@ extern crate genetic_algorithms;
 extern crate rand;
 
 use rand::{Rng, XorShiftRng, SeedableRng};
-use genetic_algorithms::solution::{PString, Solution};
+//use genetic_algorithms::solution::{PString, Solution};
 use genetic_algorithms::population::Population;
 use genetic_algorithms::normalizer::normalize;
 
 fn main() {
-    let str_set = generate_big_ass_random_set_of_PStrings(5, 4);
-    let mut pop = Population::new_random(100, &str_set, [4,3,2,1]);
-    let mut vec = pop.population.clone();
-    vec.sort_by(|a,b| a.fitness.partial_cmp(&b.fitness).unwrap());
-    normalize(vec!["ABCD".to_string(), "ACBD".to_string(), "AABA".to_string(), "BCBC".to_string()]);
-    println!("{:#?}", str_set);
-    println!("{:#?}", vec);
-    println!("{:?}", pop.avg_fitness());
+    let seed = 30;
+    let strings = generate_rangom_strings(10, 10);
+    //let strings = vec![
+    //    "AABAAAAAA".to_string(),
+    //    "ABAAABBAA".to_string(),
+    //    "AABBAAABA".to_string(),
+    //    "AAAABBBAB".to_string(),
+    //    "AAABBBAAA".to_string(),
+    //    "ABBABAAAB".to_string()
+    //];
+    let (normalized, key) = normalize(strings);
+    let mut pop = Population::new_random(100, &normalized, key.clone(), [seed, seed*3, seed*7, seed*11]);
+    println!("{:#?}", normalized);
+    println!("{:#?}", pop.population);
+    println!("{:#?}", pop.sum_fitness);
+    let sol = pop.roulette_random_solution();
+    println!("{:#?}", sol);
 }
 
-fn generate_big_ass_random_set_of_PStrings(n: usize, m: usize) -> Vec<PString> {
-    let mut v = Vec::with_capacity(n);
-    let mut rng : XorShiftRng = SeedableRng::from_seed([1,2,3,4]);
+fn generate_rangom_strings(n: usize, L: usize) -> Vec<String> {
+    let mut rng: XorShiftRng = SeedableRng::from_seed([4,3,2,1]);
+    let mut vec: Vec<String> = Vec::with_capacity(n);
+    
     for _ in 0..n {
-        let mut ps = Vec::with_capacity(m);
-        for _ in 0..m {
-            ps.push(rng.gen_range(0,4));
+        let mut s_vec = Vec::with_capacity(L);
+        for _ in 0..L {
+            s_vec.push(rng.gen_range(b'A', b'Z') as char);
         }
-        v.push(PString(ps));
+        vec.push(s_vec.into_iter().collect());
     }
-    v
-
+    vec
 }
+
+

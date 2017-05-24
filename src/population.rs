@@ -2,43 +2,113 @@ extern crate rand;
 
 use self::rand::{Rng, XorShiftRng, SeedableRng};
 use solution::{PString, Solution};
+use normalizer::{ReverseKey};
 
 pub struct Population<'a> {
     pub size_limit: usize,
     pub str_set: &'a Vec<PString>,
     pub population: Vec<Solution<'a>>,
     pub sum_fitness: f64,
-    pub rng: XorShiftRng
+    pub rng: XorShiftRng,
+    pub key: ReverseKey
 }
 
 impl<'a> Population<'a> {
-    pub fn new_random(limit: usize, str_set: &'a Vec<PString>, seed: [u32; 4]) -> Population<'a> {
+    pub fn new_random(limit: usize, str_set: &'a Vec<PString>, key: ReverseKey, seed: [u32; 4]) -> Population<'a> {
         let mut rng = SeedableRng::from_seed(seed);
         let mut vec = Vec::with_capacity(limit);
-        let len = str_set[0].len();
         let mut sum_fitness = 0.0;
-
-        for _ in 0..limit{
-            let solution = Population::generate_random_solution(len, &str_set, &mut rng);
-            sum_fitness += solution.fitness;
-            vec.push(Population::generate_random_solution(len, &str_set, &mut rng));
-        }
-
-        Population {
+        
+        let mut pop = Population {
             size_limit: limit,
             str_set: str_set,
-            population: vec,
-            sum_fitness: sum_fitness,
-            rng:rng
+            population: vec![],
+            sum_fitness: 0.0,
+            rng:rng,
+            key: key
+        };
+
+        for _ in 0..limit{
+            let solution = pop.generate_random_solution();
+            sum_fitness += solution.fitness;
+            vec.push(solution);
+        }
+
+        pop.population = vec;
+        pop.sum_fitness = sum_fitness;
+        pop
+    }
+
+    pub fn next_generation(&mut self) {
+        let mut new_pop = Vec::with_capacity(self.size_limit);
+        let mut count = 0;
+        let mut new_sum = 0.0;
+
+        while count < self.size_limit {
+            let mut i = self.roulette_random_solution();
+            let mut j = self.roulette_random_solution();
+            if i.pstr.vec() == j.pstr.vec() {
+                continue;
+            }
+            let mut sons = i.recombine_random(&j, &mut self.rng);
+            let mut ij = sons.0;
+            let mut ji = sons.1;
+            ij.mutate(0.35, &self.key, &mut self.rng);
+            ji.mutate(0.35, &self.key, &mut self.rng);
+            new_sum += ij.fitness + ji.fitness;
+            count += 2;
+            new_pop.push(ij);
+            new_pop.push(ji);
         }
     }
 
-    fn generate_random_solution<T: Rng>(len: usize, set: &'a Vec<PString>, rng: &mut T) -> Solution<'a> {
-        let mut vec = Vec::with_capacity(len);
-        for _ in 0..len {
-            vec.push(rng.gen_range(0, 4));
+    pub fn best_solution(&self) -> &Solution {
+        let mut max = &self.population[0];
+        for sol in &self.population {
+            if sol.fitness > max.fitness {
+                max = &sol;
+            }
         }
-        Solution::new(PString(vec), set)
+        max
+    }
+
+    fn generate_random_solution(&mut self) -> Solution<'a> {
+        let len = self.str_set[0].len();
+        let mut vec = Vec::with_capacity(len);
+
+        for i in 0..len {
+            vec.push(self.rng.gen_range(0, self.key[i].len()) as u32);
+        }
+        Solution::new(PString(vec), self.str_set)
+    }
+
+    pub fn roulette_random_solution(&mut self) -> Solution<'a> {
+        let mut upper = 1.0;
+        let mut prob: f64 = self.rng.gen_range(0.0, upper);
+        let mut sol: Option<&Solution> = None;
+        let mut i = self.rng.gen_range(0, self.population.len());
+        let mut count = 0;
+
+        // pa' que no se atore
+        while sol.is_none() {
+            if (upper) < 0.001{
+                sol = Some(&self.population[i]);
+                break;
+            }
+            if count >= 10 {
+                count = 0;
+                upper *= upper * 0.75;
+                prob = self.rng.gen_range(0.0, upper);
+            }
+            if prob <= self.population[i].fitness {
+                sol = Some(&self.population[i]);
+            }else{
+                i = self.rng.gen_range(0, self.population.len());
+                count += 1;
+            }
+        }
+        
+        sol.unwrap().clone()
     }
 
     pub fn avg_fitness(&self) -> f64 {

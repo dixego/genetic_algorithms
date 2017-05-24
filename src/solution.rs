@@ -2,6 +2,7 @@ extern crate rand;
 
 use std::fmt;
 use self::rand::{Rng};
+use normalizer::ReverseKey;
 
 #[derive(Clone)]
 pub struct PString(pub Vec<u32>);
@@ -75,33 +76,43 @@ impl<'a> Solution<'a> {
                 max = dist
             }
         }
-        2.0 - (max as f64)/(self.pstr.len() as f64)
+        1.0 - (max as f64)/(self.pstr.len() as f64)
     }
 
-    pub fn recombine_random<T: Rng>(&self, other: &Solution, rng: &mut T) -> Solution {
+    pub fn recombine_random<T: Rng>(&self, other: &Solution, rng: &mut T) -> (Solution, Solution) {
         let j = rng.gen_range(1, self.pstr.len() - 1); 
         self.recombine_fixed(other, j)
     }
 
-    pub fn recombine_fixed(&self, other: &Solution, j: usize) -> Solution {
+    pub fn recombine_fixed(&self, other: &Solution, j: usize) -> (Solution, Solution) {
         let len = self.pstr.len();
-        let mut v = Vec::with_capacity(len);
+        let mut v1 = Vec::with_capacity(len);
+        let mut v2 = Vec::with_capacity(len);
         let vec1 = self.pstr.vec();
         let vec2 = other.pstr.vec();
 
         for i in 0..(j+1) {
-            v.push(vec1[i]);
+            v1.push(vec1[i]);
+            v2.push(vec2[i]);
         }
 
         for i in (j+1)..len {
-            v.push(vec2[i]);
+            v1.push(vec2[i]);
+            v2.push(vec1[i]);
         }
 
-        Solution::new(PString(v), self.str_set)
+        (Solution::new(PString(v1), self.str_set), Solution::new(PString(v2), self.str_set))
         
     }
 
-    pub fn mutate<T: Rng>(&self, rng: T, probability: f64) {}
+    pub fn mutate<T: Rng>(&mut self, probability: f64, key: &ReverseKey, rng: &mut T) {
+        let p = rng.gen_range::<f64>(0.0, 1.0);
+        if p <= probability {
+            let i = rng.gen_range(0, self.pstr.vec().len());
+            self.pstr.0[i] = rng.gen_range(0, key[i].len()) as u32;
+            self.fitness = self.fitness();
+        }
+    }
 }
 
 impl<'a> fmt::Debug for Solution<'a> {
