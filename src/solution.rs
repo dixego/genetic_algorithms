@@ -38,7 +38,6 @@ impl PString {
                 count += 1;
             }
         }
-
         Ok(count)
     }
 }
@@ -50,41 +49,43 @@ impl fmt::Debug for PString {
 }
 
 #[derive(Clone)]
-pub struct Solution<'a>{
+pub struct Solution{
     pub pstr: PString,
     pub fitness: f64,
-    pub str_set: &'a Vec<PString>,
+    pub distance: u32
 }
 
-impl<'a> Solution<'a> {
+impl Solution {
 
     pub fn new(pstr: PString, set: &Vec<PString>) -> Solution {
         let mut s = Solution {
             pstr: pstr,
             fitness: 0.0,
-            str_set: set
+            distance: 0,
         };
-        s.fitness = s.fitness();
+        let x = s.fitness(set);
+        s.fitness = x.0;
+        s.distance = x.1;
         s
     }
 
-    pub fn fitness(&self) -> f64 {
+    pub fn fitness(&self, set: &Vec<PString>) -> (f64, u32) {
         let mut max = 0;
-        for s in self.str_set {
+        for s in set {
             let dist = self.pstr.distance(&s).unwrap();
             if dist > max {
                 max = dist
             }
         }
-        1.0 - (max as f64)/(self.pstr.len() as f64)
+        (1.0 - (max as f64)/(self.pstr.len() as f64), max)
     }
 
-    pub fn recombine_random<T: Rng>(&self, other: &Solution, rng: &mut T) -> (Solution, Solution) {
+    pub fn recombine_random<T: Rng>(&self, other: &Solution, rng: &mut T, set: &Vec<PString>) -> (Solution, Solution) {
         let j = rng.gen_range(1, self.pstr.len() - 1); 
-        self.recombine_fixed(other, j)
+        self.recombine_fixed(other, j, set)
     }
 
-    pub fn recombine_fixed(&self, other: &Solution, j: usize) -> (Solution, Solution) {
+    pub fn recombine_fixed(&self, other: &Solution, j: usize, set: &Vec<PString>) -> (Solution, Solution) {
         let len = self.pstr.len();
         let mut v1 = Vec::with_capacity(len);
         let mut v2 = Vec::with_capacity(len);
@@ -101,22 +102,24 @@ impl<'a> Solution<'a> {
             v2.push(vec1[i]);
         }
 
-        (Solution::new(PString(v1), self.str_set), Solution::new(PString(v2), self.str_set))
+        (Solution::new(PString(v1), set), Solution::new(PString(v2), set))
         
     }
 
-    pub fn mutate<T: Rng>(&mut self, probability: f64, key: &ReverseKey, rng: &mut T) {
+    pub fn mutate<T: Rng>(&mut self, probability: f64, key: &ReverseKey, set: &Vec<PString>, rng: &mut T) {
         let p = rng.gen_range::<f64>(0.0, 1.0);
         if p <= probability {
             let i = rng.gen_range(0, self.pstr.vec().len());
             self.pstr.0[i] = rng.gen_range(0, key[i].len()) as u32;
-            self.fitness = self.fitness();
+            let x = self.fitness(set);
+            self.fitness = x.0;
+            self.distance= x.1;
         }
     }
 }
 
-impl<'a> fmt::Debug for Solution<'a> {
+impl fmt::Debug for Solution {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "Solution {{ pstr: {:?},  fitness: {:?} }}", self.pstr, self.fitness)
+        write!(f, "Solution {{ pstr: {:?}, \tfitness: {:?}, \tdistance: {:?}}}", self.pstr, self.fitness, self.distance)
     }
 }
