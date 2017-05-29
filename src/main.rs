@@ -656,22 +656,22 @@ fn main() {
     let mut pop = Population::new_random(500, &normalized, key.clone(), [seed, seed*3, seed*7, seed*11]);
 
     //Lord forgive me but it's time to go back to tha old me
-    let all_nines = generate_every_single_motherfucking_abc_string(&normalized);
-    for sol in all_nines {
-        println!("{:?}", sol);
-    }
-
-
-    //for i in 0..2000 {
-    //    println!("{}", i);
-    //    println!("{:#?}", pop.population);
-    //    println!("avg_fitness: {:#?}", pop.avg_fitness());
-    //    println!("best_solution: {:#?}", pop.best_solution);
-    //    pop.next_generation();
+    //let all_nines = generate_every_single_motherfucking_abc_string(&normalized);
+    //for sol in all_nines {
+    //    println!("{:?}", sol);
     //}
+
+
+    for i in 0..2000 {
+        println!("{}", i);
+        println!("{:#?}", pop.population);
+        println!("avg_fitness: {:#?}", pop.avg_fitness());
+        println!("best_solution: {:#?}", pop.best_solution);
+        pop.next_generation();
+    }
     let string = decode(&pop.best_solution.pstr, &key);
-    //println!("best solution: {:?}", pop.best_solution);
-    //println!("{}", string);
+    println!("best solution: {:?}", pop.best_solution);
+    println!("{}", string);
     //println!("{:#?}", strings);
     //println!("{}", minimum_pairwise_distance(&normalized));
     //println!("{:#?}", pop.key);
