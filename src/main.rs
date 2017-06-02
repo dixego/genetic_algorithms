@@ -17,6 +17,8 @@ fn main() {
     
     let pop_size: usize = config.get_int("pop_size").expect("No pop_size in Settings") as usize;
     let generations: usize = config.get_int("generations").expect("No generations in Settings") as usize;
+    let from_init: bool = config.get_bool("from_init").expect("No from_init in Settings");
+    let mut_prob: f64 = config.get_float("mut_prob").expect("no mut_prob in Settings");
     let seeds: Vec<u32> = to_u32_vec(config.get_array("seeds").expect("No seeds in Settings"));
 
     let args: Vec<String> = args().collect();
@@ -33,8 +35,13 @@ fn main() {
     let (normalized, key) = normalize(strings.clone());
 
     for seed in seeds{
-        let mut pop = Population::new_random(pop_size, &normalized, key.clone(), [seed, seed*3, seed*7, seed*11]);
+        let mut pop;
 
+        if from_init {
+            pop = Population::new_from_init(pop_size, mut_prob, &normalized, key.clone(), [seed, seed*3, seed*7, seed*11]);
+        } else {
+            pop = Population::new_random(pop_size, mut_prob, &normalized, key.clone(), [seed, seed*3, seed*7, seed*11]);
+        }
         for i in 0..generations{
             println!("generation: {}", i);
             println!("avg_fitness: {:#?}", pop.avg_fitness());

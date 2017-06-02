@@ -6,6 +6,7 @@ use normalizer::{ReverseKey};
 
 pub struct Population<'a> {
     pub size_limit: usize,
+    pub mut_prob: f64,
     pub str_set: &'a Vec<PString>,
     pub population: Vec<Solution>,
     pub best_solution: Solution,
@@ -16,13 +17,14 @@ pub struct Population<'a> {
 
 impl<'a> Population<'a> {
 
-    pub fn new_from_init(limit: usize, str_set: &'a Vec<PString>, key: ReverseKey, seed: [u32; 4]) -> Population<'a> {
+    pub fn new_from_init(limit: usize, mut_prob: f64, str_set: &'a Vec<PString>, key: ReverseKey, seed: [u32; 4]) -> Population<'a> {
         let mut rng = SeedableRng::from_seed(seed);
         let mut vec = Vec::with_capacity(limit);
         let mut sum_fitness = 0.0;
         let fake_best = Solution::new(PString(vec![10000; str_set[0].len()]), str_set);
         let mut pop = Population {
             size_limit: limit,
+            mut_prob: mut_prob,
             str_set: str_set,
             population: vec![],
             best_solution: fake_best,
@@ -44,7 +46,7 @@ impl<'a> Population<'a> {
         pop
     }
 
-    pub fn new_random(limit: usize, str_set: &'a Vec<PString>, key: ReverseKey, seed: [u32; 4]) -> Population<'a> {
+    pub fn new_random(limit: usize, mut_prob: f64, str_set: &'a Vec<PString>, key: ReverseKey, seed: [u32; 4]) -> Population<'a> {
         let mut rng = SeedableRng::from_seed(seed);
         let mut vec = Vec::with_capacity(limit);
         let mut sum_fitness = 0.0;
@@ -53,6 +55,7 @@ impl<'a> Population<'a> {
         
         let mut pop = Population {
             size_limit: limit,
+            mut_prob: mut_prob,
             str_set: str_set,
             population: vec![],
             best_solution: fake_best,
@@ -90,8 +93,8 @@ impl<'a> Population<'a> {
             let mut sons = i.recombine_random(&j, &mut self.rng, self.str_set);
             let mut ij = sons.0;
             let mut ji = sons.1;
-            ij.mutate(0.85, &self.key, self.str_set, &mut self.rng);
-            ji.mutate(0.85, &self.key, self.str_set, &mut self.rng);
+            ij.mutate(self.mut_prob, &self.key, self.str_set, &mut self.rng);
+            ji.mutate(self.mut_prob, &self.key, self.str_set, &mut self.rng);
             new_sum += ij.fitness + ji.fitness;
             if ij.fitness > best.fitness {
                 best = ij.clone()
