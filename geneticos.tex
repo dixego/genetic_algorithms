@@ -1,0 +1,42 @@
+\documentclass{article}
+\usepackage[sc]{mathpazo}
+\usepackage[utf8]{inputenc}
+\linespread{1.05}
+\usepackage[spanish]{babel}
+\usepackage{enumitem}
+\setlist[itemize]{noitemsep}
+\usepackage{blindtext}
+\usepackage{lettrine}
+\usepackage[hmarginratio=1:1,top=32mm,columnsep=20pt]{geometry} 
+\usepackage{titling}
+\usepackage{abstract} % Allows abstract customization
+\usepackage{tipa}
+\usepackage{graphicx}
+\renewcommand{\abstractnamefont}{\normalfont\bfseries} 
+\usepackage{titlesec} % Allows customization of titles
+\renewcommand\thesection{\Roman{section}} % Roman numerals for the sections
+\renewcommand\thesubsection{\roman{subsection}} % roman numerals for subsections
+
+\setlength{\droptitle}{-4\baselineskip} % Move the title up
+\pretitle{\begin{center}\Huge\bfseries} % Article title formatting
+\posttitle{\end{center}} % Article title closing formatting
+\title{Implementación de Algoritmos Genéticos para Problema de la Cadena más Cercana (CSP)}
+\author{
+  Diego Carrillo Verduzco \\
+  Universidad Nacional Autónoma de México
+}
+\date{\today}
+\renewcommand{\maketitlehookd}{
+\begin{abstract}
+\end{abstract}
+}
+\begin{document}
+\maketitle
+\section{Introducción}
+\section{La Heurística}
+\section{El Problema}
+\section{La Implementación}
+\section{La experimentación}
+\section{Los Resultados}
+\section{Las Conclusiones}
+\end{document}

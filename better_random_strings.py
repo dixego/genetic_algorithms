@@ -53,4 +53,3 @@ for s in strings:
 
 for k in strings:
     print(k)
-print("La distancia maxima entre las cadenas es: {}".format(max_distance))
