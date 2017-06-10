@@ -1,5 +1,5 @@
 seeds = [1]
 pop_size = 1000
 generations = 3000
-from_init = true
+from_init = false
 mut_prob = 0.33

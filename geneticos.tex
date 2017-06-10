@@ -28,12 +28,56 @@
 \date{\today}
 \renewcommand{\maketitlehookd}{
 \begin{abstract}
+  Los algoritmos genéticos son heurísticas inspiradas en los mecanísmos de la selección
+  natural para resolver problemas de búsqueda y optimización. Con fines didácticos se realizó una
+  implementación de esta heurística orientada hacia encontrar soluciones de instancias del problema
+  de la cadena más cercana (CSP) con el fin de encontrar su efectividad a través de experimentación.
+  Se encontraron resultados adecuados acerca de la heurística y realidades incómodas sobre la generación
+  aleatoria de instancias del problema.
 \end{abstract}
 }
 \begin{document}
 \maketitle
 \section{Introducción}
+  El propósito de este documento es presentar una visión general de los algoritmos genéticos, describir
+  brevemente su proceso de implementación y discutir su efectividad al utilizarlos para taclear el problema
+  de la cadena más cercana. Adicionalmente, se describe este problema y se interroga la fiabilidad de 
+  generar instancias de él aleatoriamente para propósitos de experimentación.
+
 \section{La Heurística}
+  Un algoritmo genético es una metaheurística inspirada por el proceso de selección natural, utilizada
+  para generar soluciones a problemas de búsqueda y optimización.
+
+  Para utilizar un algorítmo genético para encontrar soluciones a un problema, primero es necesario 
+  encontrar una representación \textit{cromosómica} o \textit{genotípica} de la solución; típicamente
+  esto implica encontrar una representación en cadenas binarias de 1s y 0s, pero la codificación no tiene
+  que ser necesariamente de esa forma, basta con que la codificación encapsule apropiadamente las características 
+  de la solución.
+  
+  En segundo lugar, se ha de establecer una función de \textit{aptitud}, que determine la calidad de cierta
+  solución. En problemas de optimización, esta aptitud puede ser la función objetivo que se intenta resolver.
+
+  Al iniciar el algoritmo genético, se tiene una población de \textit{individuos} (soluciones candidatas)
+  de entre los cuales se debe seleccionar estocásticamente para engendrar una nueva generación de individuos.
+  Usualmente, el proceso de selección debe favorecer a los individuos con mayor aptitud, de tal manera que se
+  preserven las propiedades de esos individuos; sin embargo se pueden seleccionar diversas formas de seleccionar 
+  a los individuos.
+
+  Una vez habiendo seleccionado a los candidatos para engendrar la siguiente generación, se aplican una serie de 
+  \textit{operadores genéticos}. Entre estos se encuentran: 
+  \begin{enumerate}
+    \item \textbf{Recombinación}: En este operador se combina la información de los cromosomas de dos o más
+      individuos diferentes, creando por lo menos un nuevo individuo con carácterísticas de los individuos "padres".
+      Usualmente, si se ve la representación genotípica de la solución como un arreglo de bits, la recombinación
+      se efectúa escogiendo un índice del arreglo y copiando la información del individuo $A$ al nuevo individuo
+      hasta ese índice, y después de ese índice se copia la información del individuo $B$ al nuevo individuo.
+
+    \item \textbf{Mutación}: Con este operador se selecciona al azar alguno de los genes de una solución y se cambia
+      aleatoriamente a otro valor. Por ejemplo, si la representación genética fuera una cadena de bits, la mutación
+      representaría escoger un bit al azar de la cadena y voltearlo a su valor opuesto.
+  \end{enumerate}
+
+
 \section{El Problema}
 \section{La Implementación}
 \section{La experimentación}
